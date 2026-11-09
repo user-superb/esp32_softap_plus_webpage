@@ -2,6 +2,8 @@
 
 Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP) and HTTP web server. Serves a responsive HTML page and flash-stored JPEG image directly from memory without requiring external storage or filesystem partitioning (SPIFFS/LittleFS).
 
+<img width="728" height="470" alt="image" src="https://github.com/user-attachments/assets/eebc1453-b1aa-4613-9b62-1f6e2b1ec7cb" />
+
 ---
 
 ## Hardware & Environment
