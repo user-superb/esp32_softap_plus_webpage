@@ -2,7 +2,6 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <WebSocketsServer.h>
-#include "image_data.h"
 
 // Hardware Pin Configuration (KY-023 Joystick)
 #define PIN_VRX 34
@@ -41,10 +40,6 @@ void handleRoot() {
   server.send_P(200, "text/html", (const char *)index_html_start, index_html_end - index_html_start);
 }
 
-void handleImage() {
-  server.send_P(200, "image/jpeg", (const char *)image_data, image_data_len);
-}
-
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   if (type == WStype_CONNECTED) {
     IPAddress ip = webSocket.remoteIP(num);
@@ -80,7 +75,6 @@ void setup() {
 
   // Configure web server routes
   server.on("/", HTTP_GET, handleRoot);
-  server.on("/image.jpg", HTTP_GET, handleImage);
 
   // Start HTTP web server
   server.begin();
