@@ -2,7 +2,7 @@
 
 Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server, and WebSocket telemetry stream. Features real-time KY-023 analog joystick tracking with an interactive dashboard, plus embedded HTML and JPEG assets stored directly in flash memory without requiring SPIFFS/LittleFS partitions.
 
-<img width="728" height="470" alt="image" src="https://github.com/user-attachments/assets/eebc1453-b1aa-4613-9b62-1f6e2b1ec7cb" />
+<img width="923" height="477" alt="image" src="https://github.com/user-attachments/assets/a2fefd1f-04e6-4c16-9db8-98f13017e6da" />
 
 ---
 
@@ -22,7 +22,7 @@ Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server
 | KY-023 Pin | ESP32 GPIO | Mode / Description |
 | :--- | :--- | :--- |
 | **GND** | `GND` | Common Ground |
-| **+5V / VCC** | `3V3` | Power supply (3.3V recommended for ADC accuracy) |
+| **+5V / VCC** | `3V3` | Power supply (3.3V recommended, don't use 5V) |
 | **VRx** | `GPIO 34` | X-Axis Analog Input (`ADC1_CH6`) |
 | **VRy** | `GPIO 35` | Y-Axis Analog Input (`ADC1_CH7`) |
 | **SW** | `GPIO 32` | Push Button (`INPUT_PULLUP`, Active LOW) |
