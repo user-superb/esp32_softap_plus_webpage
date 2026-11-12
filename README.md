@@ -1,31 +1,32 @@
 # ESP32 SoftAP Web Server & Real-Time Joystick Telemetry
 
-Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server, and WebSocket telemetry stream. Features real-time KY-023 analog joystick tracking with an interactive dashboard, plus embedded HTML and JPEG assets stored directly in flash memory without requiring SPIFFS/LittleFS partitions.
-
-<img width="923" height="477" alt="image" src="https://github.com/user-attachments/assets/a2fefd1f-04e6-4c16-9db8-98f13017e6da" />
+Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server, and WebSocket telemetry stream. Features real-time HW-504 / KY-023 analog joystick tracking with a responsive, centered dashboard UI embedded directly in flash memory without requiring SPIFFS/LittleFS partitions.
 
 ---
 
 ## Features
 
 - **Autonomous Access Point**: Dedicated WPA2-PSK Wi-Fi network (`192.168.4.1`).
-- **Real-Time Joystick Telemetry**: Low-latency KY-023 joystick sampling (~40Hz) with delta thresholding (`15` ADC units) and automatic heartbeat broadcast.
+- **Real-Time Joystick Telemetry**: Low-latency joystick sampling (~40Hz) with delta thresholding (`15` ADC units) and automatic heartbeat broadcast.
 - **WebSocket Streaming**: High-speed JSON event stream on port 81 via `links2004/WebSockets`.
-- **Interactive Web Interface**: Live virtual joystick visualization, crosshairs, button press feedback, and real-time ADC metrics.
-- **Embedded Binary Assets**: HTML/CSS UI (`src/index.html`) embedded directly via `board_build.embed_txtfiles`; JPEG image served from PROGMEM (`include/image_data.h`).
-- **Station Telemetry**: Serial monitoring of Wi-Fi client connection events and periodic station counts.
+- **Minimalist Centered Interface**: Responsive, dark-mode 2D joystick visualizer with crosshairs, animated thumbstick, button press indicator, and live ADC coordinate metrics.
+- **Direct Asset Embedding**: Pure HTML/CSS/JS (`src/index.html`) embedded directly into the binary via `board_build.embed_txtfiles`.
+- **Station Telemetry**: Serial monitoring of Wi-Fi client connection events and connected station counts.
 
 ---
 
-## Hardware & Wiring (KY-023 Joystick)
+## Hardware & Wiring (HW-504 / KY-023 Joystick)
 
-| KY-023 Pin | ESP32 GPIO | Mode / Description |
+| Module Pin | ESP32 GPIO | Description / Notes |
 | :--- | :--- | :--- |
 | **GND** | `GND` | Common Ground |
-| **+5V / VCC** | `3V3` | Power supply (3.3V recommended, don't use 5V) |
-| **VRx** | `GPIO 34` | X-Axis Analog Input (`ADC1_CH6`) |
-| **VRy** | `GPIO 35` | Y-Axis Analog Input (`ADC1_CH7`) |
-| **SW** | `GPIO 32` | Push Button (`INPUT_PULLUP`, Active LOW) |
+| **+5V / VCC** | `3V3` | Power supply (**3.3V required**; do not connect to 5V to protect ADC) |
+| **VRx** | `GPIO 34` | X-Axis Analog Input (`ADC1_CH6`, range 0–4095) |
+| **VRy** | `GPIO 35` | Y-Axis Analog Input (`ADC1_CH7`, range 0–4095) |
+| **SW** | `GPIO 32` | Push Button (`INPUT_PULLUP`, Active on LOW) |
+
+> [!IMPORTANT]
+> The ESP32's ADC2 peripheral is disabled when Wi-Fi is active. Always use **ADC1 pins** (GPIO 32–39) for analog readings when running SoftAP or Wi-Fi.
 
 ---
 
@@ -33,10 +34,10 @@ Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server
 
 | Parameter | Specification |
 | :--- | :--- |
-| **Board** | ESP32 Dev Module (`esp32dev`) |
+| **Target Board** | ESP32 Dev Module (`esp32dev`) |
 | **Framework** | Arduino (`framework-arduinoespressif32`) |
 | **Toolchain** | PlatformIO |
-| **Serial Baud** | 115200 baud |
+| **Monitor Baud** | 115200 baud |
 | **Libraries** | `links2004/WebSockets @ ^2.4.1`, `WebServer`, `WiFi` |
 
 ---
@@ -49,7 +50,6 @@ Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server
 | **Password** | `12345678` |
 | **Default IP** | `192.168.4.1` |
 | **Web Dashboard** | `GET http://192.168.4.1/` (Serves embedded `src/index.html`) |
-| **Image Asset** | `GET http://192.168.4.1/image.jpg` (Streams raw JPEG binary) |
 | **Telemetry Stream** | `ws://192.168.4.1:81/` (Broadcasts `{"x":int,"y":int,"btn":bool}`) |
 
 ---
@@ -74,11 +74,6 @@ pio run -t upload
 pio device monitor -b 115200
 ```
 
-*One-liner to flash and monitor:*
-```bash
-pio run -t upload && pio device monitor -b 115200
-```
-
 ### 4. Connect & Access
 
 1. Connect your PC or mobile device to the Wi-Fi network **`ESP32-SoftAP`** using password **`12345678`**.
@@ -90,25 +85,18 @@ pio run -t upload && pio device monitor -b 115200
 ## Project Structure
 
 ```text
-├── include/
-│   └── image_data.h       # Raw JPEG byte array stored in PROGMEM
 ├── src/
-│   ├── index.html         # Interactive dashboard UI with WebSocket client
+│   ├── index.html         # Centered interactive joystick UI & WebSocket client
 │   └── main.cpp           # SoftAP, WebServer, WebSockets, & Joystick sampling
 ├── platformio.ini         # PlatformIO config, library dependencies, & embed rules
-└── .gitignore             # Ignored build artifacts and system files
+├── AGENTS.md              # AI Agent roles and ADHD-friendly communication protocol
+└── README.md              # Project documentation
 ```
 
 ---
 
-## Customization
+## How to modify the webpage
 
 ### Modifying the Dashboard UI
-Edit [`src/index.html`](file:///home/superb/Documentos/PlatformIO/Projects/ESP32/src/index.html) directly with standard HTML/CSS/JavaScript. PlatformIO embeds the file at build time, so no filesystem upload (`uploadfs`) is required.
+Edit [`src/index.html`](src/index.html) directly with standard HTML/CSS/JavaScript. PlatformIO embeds the file into the binary at build time, so no filesystem upload (`uploadfs`) is needed.
 
-### Replacing the Embedded Image
-1. Convert any image to a C byte array:
-   ```bash
-   xxd -i image.jpg > image_data.h
-   ```
-2. Replace the contents of [`include/image_data.h`](file:///home/superb/Documentos/PlatformIO/Projects/ESP32/include/image_data.h) with the resulting array and length constants (`image_data` and `image_data_len`).
