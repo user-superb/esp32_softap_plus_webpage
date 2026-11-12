@@ -1,18 +1,19 @@
 # ESP32 SoftAP Web Server & Real-Time Joystick Telemetry
 
-Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server, and WebSocket telemetry stream. Features real-time HW-504 / KY-023 analog joystick tracking with a responsive, centered dashboard UI embedded directly in flash memory without requiring SPIFFS/LittleFS partitions.
+Standalone ESP32 firmware running a Wi-Fi Access Point (SoftAP), HTTP web server, and WebSocket telemetry stream. Features real-time HW-504 / KY-023 analog joystick tracking with a responsive, centered dashboard UI embedded directly in flash memory.
 
 ---
 
-## Features
+<div>
+  <video src="https://github.com/user-attachments/assets/de736aed-e9b9-492a-b51e-dfe38f6ac3fc" controls="controls" width="100%"></video>
+</div>
 
+## Features
+- **Direct Asset Embedding**: Pure HTML/CSS/JS (`src/index.html`) embedded directly into the binary via `board_build.embed_txtfiles`.
+- **Station Telemetry**: Serial monitoring of Wi-Fi client connection events and connected station counts.
 - **Autonomous Access Point**: Dedicated WPA2-PSK Wi-Fi network (`192.168.4.1`).
 - **Real-Time Joystick Telemetry**: Low-latency joystick sampling (~40Hz) with delta thresholding (`15` ADC units) and automatic heartbeat broadcast.
 - **WebSocket Streaming**: High-speed JSON event stream on port 81 via `links2004/WebSockets`.
-- **Minimalist Centered Interface**: Responsive, dark-mode 2D joystick visualizer with crosshairs, animated thumbstick, button press indicator, and live ADC coordinate metrics.
-- **Direct Asset Embedding**: Pure HTML/CSS/JS (`src/index.html`) embedded directly into the binary via `board_build.embed_txtfiles`.
-- **Station Telemetry**: Serial monitoring of Wi-Fi client connection events and connected station counts.
-
 ---
 
 ## Hardware & Wiring (HW-504 / KY-023 Joystick)
@@ -89,7 +90,6 @@ pio device monitor -b 115200
 │   ├── index.html         # Centered interactive joystick UI & WebSocket client
 │   └── main.cpp           # SoftAP, WebServer, WebSockets, & Joystick sampling
 ├── platformio.ini         # PlatformIO config, library dependencies, & embed rules
-├── AGENTS.md              # AI Agent roles and ADHD-friendly communication protocol
 └── README.md              # Project documentation
 ```
 
